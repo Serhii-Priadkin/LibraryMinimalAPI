@@ -1,6 +1,7 @@
 using Library.Data;
 using Library.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +19,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/api/books", () =>
+app.MapGet("/api/books", (ILogger<Program> _logger) =>
 {
+    _logger.Log(LogLevel.Information, "Getting all Books");
     return Results.Ok(BookStore.bookList);
 });
 
