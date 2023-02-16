@@ -1,5 +1,6 @@
 using Library.Data;
 using Library.Models;
+using Library.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -30,13 +31,23 @@ app.MapGet("/api/books/{id:int}",(int id) =>
     return Results.Ok(BookStore.bookList.FirstOrDefault(u => u.Id == id));
 });
 
-app.MapPost("/api/books", ([FromBody] Book book) =>
+app.MapPost("/api/books", ([FromBody] BookCreateDTO book_C_DTO) =>
 {
-    if (book.Id == 0||book.Id > BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id)
+    if (book_C_DTO.Id == 0|| book_C_DTO.Id > BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id)
     {
-        book.Id = BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
+        book_C_DTO.Id = BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
     }
-    
+
+    Book book = new()
+    {
+        Id = book_C_DTO.Id,
+        Title = book_C_DTO.Title,
+        Cover = book_C_DTO.Cover,
+        Content = book_C_DTO.Content,
+        Genre = book_C_DTO.Genre,
+        Author = book_C_DTO.Author
+    };
+
     BookStore.bookList.Add(book);
     return Results.Ok(book);
 });
