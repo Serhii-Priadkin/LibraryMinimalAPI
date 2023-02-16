@@ -93,7 +93,7 @@ namespace Library.Data
                 Title="The Silent Patient",
                 Cover="https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcRFe_nR8cUhkckk_U_hdIHGQQhMPVp84bvL7eRVV8RL9MF_jEo5",
                 Content="The Silent Patient is a 2019 psychological thriller novel written by British–Cypriot author Alex Michaelides. The successful debut novel was published by Celadon Books, a division of Macmillan Publishers, on 5 February 2019. The audiobook version, released on the same date, is read by Louise Brealey and Jack Hawkins.",
-                Genre = "Thriller",
+                Genre = "Horror",
                 Author = "Alex Michaelides"
             }
         };

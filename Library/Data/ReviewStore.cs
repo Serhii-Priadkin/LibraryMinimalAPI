@@ -1,4 +1,5 @@
 ﻿using Library.Models;
+using System.Net;
 
 namespace Library.Data
 {
@@ -96,6 +97,83 @@ namespace Library.Data
                 Message = "This trilogy was amazing. Unfortunately I saw the movies first so when I read the book everything I imagined was stuff I had already seen in the movies so sometimes I wish I could've have read the books first and see what I would have imagined the environments and people and creatures of Middle-Earth to look like without the influence of Peter Jackson.",
                 BookId=9,
                 Reviewer = "Liam Roche"
+            },
+             new Review
+             {
+                Id=14,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=15,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=16,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review 
+             {
+                Id=17,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=18,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=19,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=20,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review 
+             {
+                Id=21,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=22,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review 
+             {
+                Id=23,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
+            },
+             new Review
+             {
+                Id=24,
+                Message = "I was able to pick up and finish this book on the same day.",
+                BookId=10,
+                Reviewer = "Ankit Aich"
             }
         };
     }

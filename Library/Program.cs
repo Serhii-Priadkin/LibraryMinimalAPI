@@ -5,6 +5,7 @@ using Library.Models;
 using Library.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,17 +26,79 @@ if (app.Environment.IsDevelopment())
 app.MapGet("/api/books", (ILogger<Program> _logger) =>
 {
     _logger.Log(LogLevel.Information, "Getting all Books");
-    return Results.Ok(BookStore.bookList);
+    var res = from b in BookStore.bookList
+              join rat in RatingStore.ratingList on b.Id equals rat.BookId into rati
+              join rev in ReviewStore.reviewList on b.Id equals rev.BookId into revi
+
+              select new
+              {
+                  b.Id,
+                  b.Title,
+                  b.Author,
+                  b.Cover,
+                  b.Content,
+                  rating = rati.Average(s => s.Score),
+                  reviews = from r in revi
+                            select new
+                            {
+                                r.Id,
+                                r.Message,
+                                r.Reviewer
+                            }
+              };
+    return Results.Ok(res);
 }).Produces<IEnumerable<Book>>(200);
 
-app.MapGet("/api/books/{id:int}",(int id) =>
+app.MapGet("/api/books/{id:int}", (ILogger<Program> _logger, int id) =>
 {
-    return Results.Ok(BookStore.bookList.FirstOrDefault(u => u.Id == id));
+    _logger.Log(LogLevel.Information, "Getting book details!");
+    var res = from b in BookStore.bookList
+              join rat in RatingStore.ratingList on b.Id equals rat.BookId into rati
+              join rev in ReviewStore.reviewList on b.Id equals rev.BookId into revi
+
+              select new
+              {
+                  b.Id,
+                  b.Title,
+                  b.Author,
+                  b.Cover,
+                  b.Content,
+                  rating = rati.Average(s => s.Score),
+                  reviews = from r in revi
+                            select new
+                            {
+                                r.Id,
+                                r.Message,
+                                r.Reviewer
+                            }
+              };
+
+    return Results.Ok(res.FirstOrDefault(u => u.Id == id));
 }).Produces<Book>(200);
+
+app.MapGet("/api/{genre?=Horror}", (ILogger<Program> _logger) =>
+{
+    _logger.Log(LogLevel.Information, "Getting all Books");
+    var res = from b in BookStore.bookList where b.Genre=="Horror"
+              join rat in RatingStore.ratingList on b.Id equals rat.BookId into rati
+              join rev in ReviewStore.reviewList on b.Id equals rev.BookId into revi
+              where revi.Count()>10
+              orderby rati.Average(s => s.Score) descending
+              select new
+              {
+                  b.Id,
+                  b.Title,
+                  b.Author,
+                  rating = rati.Average(s => s.Score),
+                  reviews = revi.Count()
+              }
+              ;
+    return Results.Ok(res.Take(10));
+}).Produces<IEnumerable<Book>>(200);
 
 app.MapPost("/api/books", (IMapper _mapper, [FromBody] BookCreateDTO book_C_DTO) =>
 {
-    if (book_C_DTO.Id == 0|| book_C_DTO.Id > BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id)
+    if (book_C_DTO.Id == 0 || book_C_DTO.Id > BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id)
     {
         book_C_DTO.Id = BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
     }
