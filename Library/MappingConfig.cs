@@ -9,6 +9,7 @@ namespace Library
         public MappingConfig()
         {
             CreateMap<Book,BookCreateDTO>().ReverseMap();
+            CreateMap<Review,ReviewCreateDTO>().ReverseMap();
         }
     }
 }

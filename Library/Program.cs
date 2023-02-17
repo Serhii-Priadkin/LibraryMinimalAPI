@@ -23,13 +23,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.MapGet("/api/books{title_or_author}", (ILogger<Program> _logger,string title_or_author) =>
+app.MapGet("/api/books{title_or_author}", (ILogger<Program> _logger, string title_or_author) =>
 {
     _logger.Log(LogLevel.Information, $"Ordering all Books by {title_or_author}");
     var res = from b in BookStore.bookList
               join rat in RatingStore.ratingList on b.Id equals rat.BookId into rati
               join rev in ReviewStore.reviewList on b.Id equals rev.BookId into revi
-              orderby (title_or_author == "title"|| title_or_author == "Title"?b.Title:b.Author)
+              orderby (title_or_author == "title" || title_or_author == "Title" ? b.Title : b.Author)
               select new
               {
                   b.Id,
@@ -73,10 +73,11 @@ app.MapGet("/api/books/{id:int}", (ILogger<Program> _logger, int id) =>
 app.MapGet("/api/horror", (ILogger<Program> _logger) =>
 {
     _logger.Log(LogLevel.Information, "Getting all Books");
-    var res = from b in BookStore.bookList where b.Genre=="Horror"
+    var res = from b in BookStore.bookList
+              where b.Genre == "Horror"
               join rat in RatingStore.ratingList on b.Id equals rat.BookId into rati
               join rev in ReviewStore.reviewList on b.Id equals rev.BookId into revi
-              where revi.Count()>10
+              where revi.Count() > 10
               orderby rati.Average(s => s.Score) descending
               select new
               {
@@ -90,7 +91,7 @@ app.MapGet("/api/horror", (ILogger<Program> _logger) =>
     return Results.Ok(res.Take(10));
 }).Produces<IEnumerable<Book>>(200);
 
-app.MapPost("/api/books", (IMapper _mapper, [FromBody] BookCreateDTO book_C_DTO) =>
+app.MapPost("/api/books/save", (IMapper _mapper, [FromBody] BookCreateDTO book_C_DTO) =>
 {
     if (book_C_DTO.Id == 0 || book_C_DTO.Id > BookStore.bookList.OrderByDescending(u => u.Id).FirstOrDefault().Id)
     {
@@ -102,6 +103,18 @@ app.MapPost("/api/books", (IMapper _mapper, [FromBody] BookCreateDTO book_C_DTO)
     BookStore.bookList.Add(book);
     return Results.Ok(book.Id);
 }).Produces<Book>(201);
+
+app.MapPut("/api/books/{id:int}/review", (IMapper _mapper,int id , [FromBody] ReviewCreateDTO review_C_DTO) =>
+{
+
+    review_C_DTO.Id = ReviewStore.reviewList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
+    review_C_DTO.BookId = id;
+    Review review = _mapper.Map<Review>(review_C_DTO);
+
+    ReviewStore.reviewList.Add(review);
+    return Results.Ok(review);
+}).Produces<Review>(201);
+
 
 
 
