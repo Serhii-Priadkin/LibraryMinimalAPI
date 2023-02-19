@@ -1,10 +1,12 @@
 using AutoMapper;
+using FluentValidation;
 using Library;
 using Library.Data;
 using Library.Models;
 using Library.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -104,7 +107,7 @@ app.MapPost("/api/books/save", (IMapper _mapper, [FromBody] BookCreateDTO book_C
     return Results.Ok(book.Id);
 }).Produces<Book>(201);
 
-app.MapPut("/api/books/{id:int}/review", (IMapper _mapper,int id , [FromBody] ReviewCreateDTO review_C_DTO) =>
+app.MapPut("/api/books/{id:int}/review", (IMapper _mapper, int id, [FromBody] ReviewCreateDTO review_C_DTO) =>
 {
 
     review_C_DTO.Id = ReviewStore.reviewList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
@@ -112,9 +115,23 @@ app.MapPut("/api/books/{id:int}/review", (IMapper _mapper,int id , [FromBody] Re
     Review review = _mapper.Map<Review>(review_C_DTO);
 
     ReviewStore.reviewList.Add(review);
-    return Results.Ok(review);
+    return Results.Ok(review.Id);
 }).Produces<Review>(201);
 
+app.MapPut("/api/books/{id:int}/rate", (IMapper _mapper, [FromBody] RatingCreateDTO rating_C_DTO, IValidator<RatingCreateDTO> _validator,  int id) =>
+{
+    var validationResult = _validator.ValidateAsync(rating_C_DTO).GetAwaiter().GetResult();
+    if (!validationResult.IsValid)
+    {
+        return Results.BadRequest(validationResult.Errors.FirstOrDefault().ToString());
+    }
+    rating_C_DTO.Id = RatingStore.ratingList.OrderByDescending(u => u.Id).FirstOrDefault().Id + 1;
+    rating_C_DTO.BookId = id;
+    Rating rating = _mapper.Map<Rating>(rating_C_DTO);
+
+    RatingStore.ratingList.Add(rating);
+    return Results.Ok(rating.Score);
+}).Produces<Rating>(201).Produces(400);
 
 
 

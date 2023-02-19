@@ -10,6 +10,7 @@ namespace Library
         {
             CreateMap<Book,BookCreateDTO>().ReverseMap();
             CreateMap<Review,ReviewCreateDTO>().ReverseMap();
+            CreateMap<Rating,RatingCreateDTO>().ReverseMap();
         }
     }
 }
